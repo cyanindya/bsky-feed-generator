@@ -7,7 +7,9 @@ export class ClaeAnadenArtAlgo extends AlgoBase {
   includedKeywords = [
     "#anothereden", "anothereden", "#アナザーエデン", "アナザーエデン", "#アナザー絵デン"
   ];
-  excludedKeywords = ["clae_ae", "#clae_ae"];
+  excludedKeywords = [
+    "clae_ae", "#clae_ae"
+  ];
 
   constructor(feed:number) {
     super(feed)

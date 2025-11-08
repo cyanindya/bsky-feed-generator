@@ -11,7 +11,6 @@ type AlgoHandler = (ctx: AppContext, params: QueryParams) => Promise<AlgoOutput>
 
 export const algoClasses : Array<AlgoBase> = [
   new claeAndn(0),
-  new claeTest(1),
 ]
 
 // thanks to this SO answer:

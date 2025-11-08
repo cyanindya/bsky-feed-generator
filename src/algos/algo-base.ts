@@ -43,6 +43,7 @@ export abstract class AlgoBase {
 		// example: https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?author=did:plc:wc2nljklaywqr4axivpddo4i&q=anothereden&limit=100&sort=latest
 		
 		// For now, grabbing the data from the user is done using Axios API
+		console.log("Searching for user " + this.includedAuthors[0])
 		const response = await axios.get('app.bsky.feed.searchPosts',
 			{
 				baseURL: 'https://api.bsky.app/xrpc/',
@@ -91,6 +92,7 @@ export abstract class AlgoBase {
 				}
 			})
 		
+		console.log("Result: ")
 		console.log(oldData)
 
 		if (oldData.length > 0) {	
@@ -109,28 +111,34 @@ export abstract class AlgoBase {
 	}
 	
 	isAuthorExcluded: Filter = (queryTerm? : string) : boolean => {
-		return !this.excludedAuthors.some((author : string) => {
+		return this.excludedAuthors.some((author : string) => {
 				return queryTerm?.includes(author)
 			})
 	}
 
 	isKeywordIncluded: Filter = (queryTerm : string) : boolean => {
 		return this.includedKeywords.some((keyword : string) => {
-				return queryTerm.includes(keyword)
+				return queryTerm.toLowerCase().includes(keyword.toLowerCase())
 			})
 	}
 	
 	isKeywordExcluded: Filter = (queryTerm : string) : boolean => {
-		return !this.excludedKeywords.some((keyword : string) => {
-				return queryTerm.includes(keyword)
+		return this.excludedKeywords.some((keyword : string) => {
+				console.log('"' + queryTerm + '"' + "+" + keyword + '=' + queryTerm.includes(keyword))
+				return queryTerm.toLowerCase().includes(keyword.toLowerCase())
 			})
 	}
 
-	public async applyFeedFilter(postToFilter : PostFilterQuery) : Promise<boolean> {
-		return this.isAuthorIncluded(postToFilter.authorInclude)
-			&& this.isAuthorExcluded(postToFilter.authorExclude)
-			&& this.isKeywordIncluded(postToFilter.post)
-			&& this.isKeywordExcluded(postToFilter.post)
+	public applyFeedFilter(postToFilter : PostFilterQuery) : boolean {
+		let hasIncludedAuthor = this.isAuthorIncluded(postToFilter.authorInclude)
+		let hasExcludedAuthor = this.isAuthorExcluded(postToFilter.authorExclude)
+		let hasIncludedKeyword = this.isKeywordIncluded(postToFilter.post)
+		let hasExcludedKeyword = this.isKeywordExcluded(postToFilter.post)
+
+		// Ideally, true false true false
+		console.log(hasIncludedAuthor, hasExcludedAuthor, hasIncludedKeyword, hasExcludedKeyword)
+
+		return hasIncludedAuthor && !hasExcludedAuthor && hasIncludedKeyword && !hasExcludedKeyword
 	}
 
 	// This handler function is executed when someone attempts to access the feed, not
